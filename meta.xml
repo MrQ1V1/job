@@ -1,0 +1,5 @@
+<meta>
+	<info name="job" version="1.0.0" type="script" author="alexaxel705" description="job"/>
+	
+	<script src="taxi.lua" type="shared"/>
+</meta>
