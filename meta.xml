@@ -5,9 +5,9 @@
 	
 	--- [Работа пизавоза]
 	
-	<script src=" pizzaserver.lua" type="server" />
-        <script src=" pizzashared" type="server" />
-        <script src="pizzaclient" type="client" />
+	<script src="pizzaserver.lua" type="server" />
+        <script src="pizzashared.lua" type="server" />
+        <script src="pizzaclient.lua" type="client" />
 	    <file src="background.png" />
 		<file src="bu.png" />
 		<file src="bu2.png" />
