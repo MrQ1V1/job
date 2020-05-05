@@ -6,6 +6,9 @@
 	
 	--- [Работа такси]
 	<script src="taxi.lua" type="shared"/>
+	<file src="taxi_background.png" />
+	<file src="start_bu.png" />
+	<file src="q_bu.png" />
 	
 	--- [Работа пизавоза]
 	<script src="pizzaserver.lua" type="server" />
