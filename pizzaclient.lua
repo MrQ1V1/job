@@ -176,10 +176,10 @@ function clientPickupHit(thePlayer, matchingDimension)
 end
 
 function finishBoarding ()
-	toggleAllControls ( true, true, true )
-			outputChatBox ( "вы развезвезли пиццу,ваше вознаграждение - 500$ ", 255, 100, 100, true )
-			triggerServerEvent ( "AddPlayerMoney", localPlayer, localPlayer, 500 ) --НАГРАДА ЗА ОСМОТР
-				setElementPosition ( trailer, bases[getElementData ( localPlayer, "nearestBase" )][1], bases[getElementData ( localPlayer, "nearestBase" )][2], bases[getElementData ( localPlayer, "nearestBase" )][3] )
+	toggleAllControls(true, true, true)
+	outputChatBox("вы развезвезли пиццу,ваше вознаграждение - 500$ ", 255, 100, 100, true)
+	triggerServerEvent("AddPlayerMoney", localPlayer, localPlayer, 500)
+	setElementPosition(trailer, bases[getElementData ( localPlayer, "nearestBase" )][1], bases[getElementData ( localPlayer, "nearestBase" )][2], bases[getElementData ( localPlayer, "nearestBase" )][3] )
 end
 addEventHandler ( "onClientMarkerHit", getRootElement(), clientPickupHit )
 
