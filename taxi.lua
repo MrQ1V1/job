@@ -102,76 +102,53 @@ local pedCus = {
  
 
  
+function teamSet()
+    setElementModel(source, 57)
+	createVehicle(420, 1777.3017578125, -1891.779296875, 13.157614707947)
+	triggerClientEvent(source, "helpmessageEvent", source, "Теперь вы работаете водителем такси!")
 
-Teame = createTeam("Taxi Driver", 0, 255, 0)
-
- 
-
-taxiTeams = { [Teame] = true }
-taxiVehs = { [420] = true }
- 
-function teamSet ( )
-    local team = getTeamFromName ( "Taxi Driver" )
-    if team then
-        setPlayerTeam ( source, team )
-        setPlayerNametagColor ( source, 0, 255, 0 )
-            setElementModel(source, 57)
-			createVehicle(420, 1777.3017578125, -1891.779296875, 13.157614707947)
-            outputChatBox("Теперь вы работаете водителем такси!", thePlayer)
-        else
-            local teamw = getTeamFromName ( "Taxi Driver" )
-            if teamw then
-            cancelEvent()
-            outputChatBox("Вы уже водитель такси!", source)
-        end
-    end
 end
-addEvent ( "sTeame", true)
-addEventHandler ( "sTeame", root, teamSet )
+addEvent("sTeame", true)
+addEventHandler("sTeame", root, teamSet)
+
 
  
-function enterVehicle ( thePlayer, seat, jacked ) -- when a player enters a vehicle
-    if getElementType ( thePlayer ) == "player" then
-        if ( taxiVehs[getElementModel ( source )] ) and ( not taxiTeams[getPlayerTeam( thePlayer )] ) then -- if the vehicle is one of 4 police cars, and the skin is not a police skin
-            removePedFromVehicle( thePlayer )-- force the player out of the vehicle
-            outputChatBox("Only Taxi Drivers can drive this vehicle!", thePlayer)
-        end
-    end
+
+local markers = { }
+local blips = { }
+local peds = { }
+local mposi = { }
+local mposii = {}
+
+
+ 
+
+function startJob(thePlayer)
+    local x, y, z = unpack(pickups[math.random(#pickups)])
+    markers [thePlayer] = createMarker(x, y, z, "cylinder", 5.0, 255, 0, 0, 0)
+	mposi = {getElementPosition(markers[thePlayer])}
+    local skins = unpack(pedCus[math.random(#pedCus)])
+    peds[thePlayer] = createPed(skins, x, y, z)  
+    blips[thePlayer] = createBlipAttachedTo(markers[thePlayer], 58, 2, 255, 0, 0, 255, 0, 16383.0, thePlayer)
+	
+	triggerClientEvent(thePlayer, "AddGPSMarker", thePlayer, x, y, z, "Пассажир")
+	
+    addEventHandler("onMarkerHit", markers[thePlayer], warpit)
 end
-addEventHandler ( "onVehicleEnter", getRootElement(), enterVehicle )
-
  
-
-markers = { }
-blips = { }
-peds = { }
-mposi = { }
-mposii = {}
-
-
  
-
-function startJob ( thePlayer )
-    local x, y, z = unpack ( pickups [ math.random ( #pickups ) ] )
-    markers [ thePlayer ] = createMarker ( x, y, z, "cylinder", 5.0, 255, 0, 0, 0 )
-	mposi = { getElementPosition( markers [ thePlayer ] ) }
-    local skins = unpack ( pedCus [ math.random ( #pedCus ) ] )
-    peds [ thePlayer ] = createPed( skins, x, y, z )  
-    blips [ thePlayer ] = createBlipAttachedTo ( markers [ thePlayer ], 58 )
-    addEventHandler ( "onMarkerHit", markers [ thePlayer ], warpit )
-	end
  
-function inVEH ( thePlayer )
-    if ( getElementType ( thePlayer ) == "player" and isPedInVehicle ( thePlayer ) ) then
-        if ( getElementModel ( source ) == 420 ) then
-            startJob ( thePlayer )
+function inVEH(thePlayer)
+    if (getElementType(thePlayer) == "player" and isPedInVehicle(thePlayer)) then
+        if(getElementModel(source) == 420) then
+            startJob(thePlayer)
         end
     end
 end
 addEventHandler ( "onVehicleEnter", getRootElement(), inVEH )
  
 function warpit ( thePlayer )
-    if ( getElementType ( thePlayer ) == "player" and isPedInVehicle ( thePlayer ) ) then
+    if (getElementType(thePlayer) == "player" and isPedInVehicle(thePlayer)) then
 	   local vehiclee = getPedOccupiedVehicle ( thePlayer )
 		if ( getElementModel ( vehiclee ) == 420 ) then
             setTimer ( warpPedIntoVehicle, 2000, 1, peds [ thePlayer ], vehiclee, 2 )
@@ -179,11 +156,13 @@ function warpit ( thePlayer )
             local x, y, z = unpack ( dropoffss [ math.random ( #dropoffss ) ] )
             markers [ thePlayer ] = createMarker ( x, y, z - 1, "cylinder", 5.0, 255, 0, 0, 50 )
 			mposii = { getElementPosition( markers [ thePlayer ] ) }
-            blips [ thePlayer ] = createBlipAttachedTo ( markers [ thePlayer ], 41 )
-            addEventHandler ( "onMarkerHit", markers [ thePlayer ], pickmeup )
-			end
-			end
-        end
+            blips[thePlayer] = createBlipAttachedTo(markers[thePlayer], 41, 2, 255, 0, 0, 255, 0, 16383.0, thePlayer)
+			triggerClientEvent(thePlayer, "AddGPSMarker", thePlayer, x, y, z, "Точка доставки")
+
+            addEventHandler("onMarkerHit", markers[thePlayer ], pickmeup)
+		end
+	end
+end
 
  
 function pickmeup ( thePlayer )
@@ -194,14 +173,14 @@ function pickmeup ( thePlayer )
 		local money = getDistanceBetweenPoints2D ( mx, my, mmx, mmy )
 		finalmoney = math.floor ( money )
 		if finalmoney then
-		setTimer( givePlayerMoney, 3000, 1, thePlayer, finalmoney )
-		setTimer( outputChatBox, 3000, 1, thePlayer, "You have earned ".. money .."!", 0, 144, 0)
-        setTimer (
-            function ( )
-                if ( isElement ( peds [ thePlayer ] ) ) then
-                    destroyElement ( peds [ thePlayer ] )
+        setTimer(
+            function ()
+                if (isElement(peds[thePlayer ])) then
+                    destroyElement(peds[thePlayer])
                 end
-                startJob ( thePlayer )
+				exports["228"]:AddPlayerMoney(thePlayer, finalmoney)
+				triggerClientEvent(thePlayer, "helpmessageEvent", thePlayer, "You have earned ".. money .."!")
+                startJob(thePlayer)
             end
             ,3000, 1
         )
@@ -209,18 +188,18 @@ function pickmeup ( thePlayer )
 		end
     end
 
-function deleteOnExit ( thePlayer )
-    if ( isElement ( markers [ thePlayer ] ) ) then
-        destroyElement ( markers [ thePlayer ] )
+function deleteOnExit(thePlayer)
+    if(isElement(markers[thePlayer])) then
+        destroyElement(markers[thePlayer])
     end
-    if ( isElement ( blips [ thePlayer ] ) ) then
-        destroyElement ( blips [ thePlayer ] )
+    if(isElement(blips[thePlayer])) then
+        destroyElement(blips[thePlayer])
     end
-    if ( isElement ( peds [ thePlayer ] ) ) then
-        destroyElement ( peds [ thePlayer ] )
+    if(isElement(peds[thePlayer])) then
+        destroyElement(peds[thePlayer])
     end
 end
-addEventHandler ( "onVehicleExit", getRootElement(), deleteOnExit )
+addEventHandler("onVehicleExit", getRootElement(), deleteOnExit)
 
  
 function destroyJob ( thePlayer )

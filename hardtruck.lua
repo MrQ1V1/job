@@ -381,7 +381,7 @@ function MarkerHit(hitElement, Dimension)
 			local theVehicle = hitElement
 			if(getElementData(theVehicle, "type") == "jobtruck" and getElementData(source, "type") == "TruckMarker" and getElementData(source, "player") == getPlayerName(thePlayer)) then
 				exports["228"]:AddPlayerMoney(thePlayer, getElementData(theVehicle, "money"), "РАБОТА ВЫПОЛНЕНА!")
-				exports["228"]:Respect(thePlayer, 161)
+				exports["228"]:AddSkill(thePlayer, 161)
 
 				DestroyTruckMarker(thePlayer)		
 				exports["228"]:Respect(thePlayer, "civilian", 1)
